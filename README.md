@@ -13,11 +13,11 @@ These scripts allow users to backup APK files and data for specific apps or all 
 ## Usage
 ## 使用方法
 
-To use these scripts, you need to place them on your Android device and ensure that you have the permissions to execute them. For the restore script, you may need root access to fully access the application data directories.  
-要使用这些脚本，你需要将它们放在你的 Android 设备上，并确保你有执行它们的权限。对于恢复脚本，你需要 root 权限才能完全访问应用数据目录。
+To use these scripts, you must have root access on your Android device to fully access the application data directories for both backup and restoration processes. Place the scripts on your device, and run them with root permissions.  
+要使用这些脚本，你必须在你的 Android 设备上拥有 root 权限，以便在备份和恢复过程中完全访问应用数据目录。将脚本放置在你的设备上，并以 root 权限运行它们。
 
-Follow the prompts in the scripts and use them only after you have fully understood how they work.  
-请按照脚本中的提示操作，并且仅在充分理解其工作原理后使用。
+Follow the prompts in the scripts, and use them only after you have fully understood how they work and the implications of making changes to your device's data.  
+请按照脚本中的提示操作，并且仅在充分理解其工作原理以及对你的设备数据进行更改的后果后使用。
 
 ## Disclaimer
 ## 免责声明
