@@ -31,8 +31,8 @@ These scripts involve sensitive data operations that may cause data loss. Please
 If you would like to improve these scripts, please feel free to submit pull requests or raise suggestions in the issues.  
 如果你想对这些脚本进行改进，请随时提交 pull 请求或者在 issues 中提出你的建议。
 
-If you have any questions or suggestions, please contact us through the [issue tracker](链接到GitHub仓库的issue页面).  
-如果你有任何问题或建议，请通过 [issue tracker](链接到GitHub仓库的issue页面) 联系我们。
+If you have any questions or suggestions, please contact us through the [issue tracker](https://github.com/lxgz12345/AndroidAPKBackupRestore/issues).  
+如果你有任何问题或建议，请通过 [issue tracker](https://github.com/lxgz12345/AndroidAPKBackupRestore/issues) 联系我们。
 
 ## Acknowledgements
 ## 致谢
