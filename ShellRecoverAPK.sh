@@ -13,6 +13,8 @@ check_command() {
 check_command tar
 check_command pm
 check_command ls
+check_command cp
+check_command mkdir
 
 # 列出备份文件夹
 echo "可恢复的应用列表："
@@ -76,19 +78,25 @@ install_and_restore() {
     # 恢复数据
     local user0_tar="$backup_base/$app_name/data_user_0.tar"
     if [ -f "$user0_tar" ]; then
+        mkdir -p "/data/user/0/$app_name"
         tar -xf "$user0_tar" --exclude='./lib' -C "/data/user/0/$app_name" || echo "恢复失败：$user0_tar" >&2
     fi
     local user999_tar="$backup_base/$app_name/data_user_999.tar"
     if [ -f "$user999_tar" ]; then
+        mkdir -p "/data/user/999/$app_name"
         tar -xf "$user999_tar" --exclude='./lib' -C "/data/user/999/$app_name" || echo "恢复失败：$user999_tar" >&2
     fi
     local data_tar="$backup_base/$app_name/sdcard_Android_data.tar"
     if [ -f "$data_tar" ]; then
-        tar -xf "$data_tar" --exclude='./lib' -C "/sdcard/Android/data/$app_name" || echo "恢复失败：$data_tar" >&2
+        local data_dir="/sdcard/Android/data/$app_name"
+        mkdir -p "$data_dir"
+        tar -xf "$data_tar" --exclude='./lib' -C "$data_dir" || echo "恢复失败：$data_tar" >&2
     fi
     local obb_tar="$backup_base/$app_name/sdcard_Android_obb.tar"
     if [ -f "$obb_tar" ]; then
-        tar -xf "$obb_tar" --exclude='./lib' -C "/sdcard/Android/obb/$app_name" || echo "恢复失败：$obb_tar" >&2
+        local obb_dir="/sdcard/Android/obb/$app_name"
+        mkdir -p "$obb_dir"
+        tar -xf "$obb_tar" --exclude='./lib' -C "$obb_dir" || echo "恢复失败：$obb_tar" >&2
     fi
     
     echo "恢复完成：$app_name"
