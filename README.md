@@ -11,8 +11,8 @@ AndroidBackupRestore 是一套用于备份和恢复 Android 应用数据的脚�
 如果你想对这些脚本进行改进，请随时提交 pull 请求或者在 issues 中提出你的建议。
 如果你有任何问题或建议，请通过 [issue tracker](https://github.com/lxgz12345/AndroidAPKBackupRestore/issues) 联系我们。
 ## 致谢
-该项目及其中包含的脚本是由 [lxgz12345] 和 OpenAI 的 AI 语言模型 ChatGPT 共同创作的。该项目旨在为 Android 数据备份和恢复提供一个有用的工具。
----
+该项目及其中包含的脚本是由 [lxgz12345] 和 OpenAI 的 AI 语言模型 ChatGPT 共同创作的。该项目旨在为 Android 数据备份和恢复提供一个有用的工具。  
+
 # 【English】AndroidBackupRestore
 AndroidBackupRestore is a set of scripts for backing up and restoring Android application data.
 ## Description
