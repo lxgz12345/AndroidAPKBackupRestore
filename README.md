@@ -1,5 +1,10 @@
 # 【Chinese】安卓应用及数据备份恢复工具
-AndroidAppAndDataBackupRestore 是一套用于备份和恢复 Android 应用数据的脚本集。
+AndroidAppAndDataBackupRestore 是一套用于备份和恢复 Android 应用数据的脚本集。  
+
+**[省流：  
+1、备份：备份所有数据到“/sdcard/ShellBackupAPK”目录下，导出文件夹后可以刷机之类的操作  
+2、恢复：刷机或其他操作完成需要恢复时，先刷好root再执行恢复脚本，注意不要安装到执行应用了，比如用MT管理器执行的脚本，注意不要恢复到MT管理器了，安装时会突然退出](https://github.com/lxgz12345/AndroidAPKBackupRestore)**  
+
 ## 描述
 这些脚本允许用户备份特定应用或所有非系统应用的 APK 文件和数据，并能够将这些数据恢复到相同或不同的设备上。备份脚本将备份数据存储在 SD 卡上，而恢复脚本则会从这些备份中恢复数据。
 ## 使用方法
