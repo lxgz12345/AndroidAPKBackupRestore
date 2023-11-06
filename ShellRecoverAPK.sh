@@ -70,10 +70,22 @@ install_apks() {
     local apk_files=("$backup_base/$app_name"/*.apk)
     if [ ${#apk_files[@]} -eq 1 ]; then
         # 只有一个 APK 文件，使用 pm install
-        pm install "${apk_files[0]}" || {
-            echo "安装失败：${apk_files[0]}" >&2
-            return 1
-        }
+        pm install "${apk_files[0]}"
+        if [ $? -ne 0 ]; then
+            # 如果直接安装失败，则复制到 /data/local/tmp 并重试
+            echo "直接安装失败，尝试复制到 /data/local/tmp ..."
+            cp "${apk_files[0]}" "$tmp_dir"
+            local tmp_apk="$tmp_dir/$(basename "${apk_files[0]}")"
+            pm install "$tmp_apk"
+            if [ $? -ne 0 ]; then
+                echo "安装失败：$tmp_apk" >&2
+                # 可以选择在这里删除临时文件
+                rm "$tmp_apk"
+                return 1
+            fi
+            # 如果这次安装成功，删除临时文件
+            rm "$tmp_apk"
+        fi
     else
         # 多个 APK 文件，需要创建安装会话
 
@@ -87,7 +99,6 @@ install_apks() {
             echo "安装会话创建失败。输出为：$output" >&2
             return 1
         fi
-
 
         local file_index=0
 
@@ -123,7 +134,6 @@ install_apks() {
 
     echo "安装完成：$app_name"
 }
-
 
 # 安装并恢复数据的函数
 install_and_restore() {
