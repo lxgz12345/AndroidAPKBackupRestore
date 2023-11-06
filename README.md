@@ -1,5 +1,5 @@
-# 【Chinese】安卓备份恢复工具
-AndroidBackupRestore 是一套用于备份和恢复 Android 应用数据的脚本集。
+# 【Chinese】安卓应用及数据备份恢复工具
+AndroidAppAndDataBackupRestore 是一套用于备份和恢复 Android 应用数据的脚本集。
 ## 描述
 这些脚本允许用户备份特定应用或所有非系统应用的 APK 文件和数据，并能够将这些数据恢复到相同或不同的设备上。备份脚本将备份数据存储在 SD 卡上，而恢复脚本则会从这些备份中恢复数据。
 ## 使用方法
@@ -13,8 +13,8 @@ AndroidBackupRestore 是一套用于备份和恢复 Android 应用数据的脚�
 ## 致谢
 该项目及其中包含的脚本是由 [lxgz12345] 和 OpenAI 的 AI 语言模型 ChatGPT 共同创作的。该项目旨在为 Android 数据备份和恢复提供一个有用的工具。  
 
-# 【English】AndroidBackupRestore
-AndroidBackupRestore is a set of scripts for backing up and restoring Android application data.
+# 【English】AndroidAppAndDataBackupRestore
+AndroidAppAndDataBackupRestore is a set of scripts for backing up and restoring Android application data.
 ## Description
 These scripts allow users to backup APK files and data for specific apps or all non-system apps, and to restore this data to the same or a different device. The backup script stores the backup data on an SD card, while the restore script will recover the data from these backups.
 ## Usage
