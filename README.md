@@ -4,11 +4,6 @@
 AndroidBackupRestore is a set of scripts for backing up and restoring Android application data.  
 AndroidBackupRestore 是一套用于备份和恢复 Android 应用数据的脚本集。
 
-## state
-## 说明
-已知现在由很多问题，所以不建议使用。  
-Known now by a lot of problems, so not recommended.
-
 ## Description
 ## 描述
 

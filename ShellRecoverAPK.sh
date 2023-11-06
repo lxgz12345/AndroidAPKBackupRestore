@@ -15,6 +15,10 @@ check_command pm
 check_command ls
 check_command cp
 check_command mkdir
+check_command grep
+check_command cut
+check_command chown
+check_command awk
 
 # 列出备份文件夹
 echo "可恢复的应用列表："
@@ -40,6 +44,87 @@ fi
 echo "请输入序号选择应用（输入'all'或'ALL'恢复所有应用）："
 read user_choice
 
+# 函数：恢复数据
+restore_data() {
+    local app_name=$1
+    local user_id=$2
+    local data_tar_path=$3
+    local target_dir=$4
+
+    if [ -f "$data_tar_path" ]; then
+        mkdir -p "$target_dir"
+        tar -xf "$data_tar_path" --exclude='./lib' -C "$target_dir" || echo "恢复失败：$data_tar_path" >&2
+        chown -R $user_id:$user_id "$target_dir"
+    fi
+}
+
+# 函数：安装 APKs
+install_apks() {
+    local app_name=$1
+    local tmp_dir="/data/local/tmp"
+    local session_id
+
+    echo "开始安装 $app_name ..."
+
+    # 检查是否有 Split APKs
+    local apk_files=("$backup_base/$app_name"/*.apk)
+    if [ ${#apk_files[@]} -eq 1 ]; then
+        # 只有一个 APK 文件，使用 pm install
+        pm install "${apk_files[0]}" || {
+            echo "安装失败：${apk_files[0]}" >&2
+            return 1
+        }
+    else
+        # 多个 APK 文件，需要创建安装会话
+
+        # 计算总大小
+        local total_size=$(du -cb "$backup_base/$app_name"/*.apk | grep 'total$' | cut -f1)
+
+        # 创建安装会话
+        output=$(pm install-create -S $total_size)
+        session_id=$(echo "$output" | grep -o '[0-9]*' | head -n 1)
+        if [ -z "$session_id" ]; then
+            echo "安装会话创建失败。输出为：$output" >&2
+            return 1
+        fi
+
+
+        local file_index=0
+
+        # 安装 base APK 和所有的 Split APKs
+        for apk_file in "${apk_files[@]}"; do
+            local file_size=$(stat -c%s "$apk_file")
+            local file_name=$(basename "$apk_file")
+
+            # 复制到临时目录
+            cp "$apk_file" "$tmp_dir"
+            local tmp_apk="$tmp_dir/$file_name"
+
+            # 阶段性地写入 APK 文件
+            pm install-write -S $file_size $session_id $file_index "$tmp_apk" || {
+                echo "写入 APK 失败：$tmp_apk" >&2
+                pm install-abandon $session_id
+                rm "$tmp_apk"
+                return 1
+            }
+            file_index=$((file_index + 1))
+
+            # 删除临时 APK
+            rm "$tmp_apk"
+        done
+
+        # 提交安装
+        pm install-commit $session_id || {
+            echo "安装提交失败。" >&2
+            pm install-abandon $session_id
+            return 1
+        }
+    fi
+
+    echo "安装完成：$app_name"
+}
+
+
 # 安装并恢复数据的函数
 install_and_restore() {
     local app_name=$1
@@ -53,51 +138,16 @@ install_and_restore() {
     fi
 
     # 安装 APK
-    local base_apk="$backup_base/$app_name/base.apk"
-    if [ -f "$base_apk" ]; then
-        # 复制到临时目录
-        cp "$base_apk" "$tmp_dir"
-        local tmp_apk="$tmp_dir/$(basename "$base_apk")"
-        pm install "$tmp_apk" || echo "安装失败：$tmp_apk" >&2
-        # 删除临时 APK
-        rm "$tmp_apk"
-
-        # 安装 Split APKs 如果存在
-        for split_apk in "$backup_base/$app_name"/split_*.apk; do
-            if [ -f "$split_apk" ]; then
-                # 复制到临时目录
-                cp "$split_apk" "$tmp_dir"
-                local tmp_split_apk="$tmp_dir/$(basename "$split_apk")"
-                pm install "$tmp_split_apk" || echo "安装失败：$tmp_split_apk" >&2
-                # 删除临时 Split APK
-                rm "$tmp_split_apk"
-            fi
-        done
-    fi
+    install_apks $app_name
+    
+    # 获取应用的用户ID
+    local user_id=$(pm list packages -U | grep "$app_name" | cut -d':' -f3)
     
     # 恢复数据
-    local user0_tar="$backup_base/$app_name/data_user_0.tar"
-    if [ -f "$user0_tar" ]; then
-        mkdir -p "/data/user/0/$app_name"
-        tar -xf "$user0_tar" --exclude='./lib' -C "/data/user/0/$app_name" || echo "恢复失败：$user0_tar" >&2
-    fi
-    local user999_tar="$backup_base/$app_name/data_user_999.tar"
-    if [ -f "$user999_tar" ]; then
-        mkdir -p "/data/user/999/$app_name"
-        tar -xf "$user999_tar" --exclude='./lib' -C "/data/user/999/$app_name" || echo "恢复失败：$user999_tar" >&2
-    fi
-    local data_tar="$backup_base/$app_name/sdcard_Android_data.tar"
-    if [ -f "$data_tar" ]; then
-        local data_dir="/sdcard/Android/data/$app_name"
-        mkdir -p "$data_dir"
-        tar -xf "$data_tar" --exclude='./lib' -C "$data_dir" || echo "恢复失败：$data_tar" >&2
-    fi
-    local obb_tar="$backup_base/$app_name/sdcard_Android_obb.tar"
-    if [ -f "$obb_tar" ]; then
-        local obb_dir="/sdcard/Android/obb/$app_name"
-        mkdir -p "$obb_dir"
-        tar -xf "$obb_tar" --exclude='./lib' -C "$obb_dir" || echo "恢复失败：$obb_tar" >&2
-    fi
+    restore_data "$app_name" "$user_id" "$backup_base/$app_name/data_user_0.tar" "/data/user/0/$app_name"
+    restore_data "$app_name" "$user_id" "$backup_base/$app_name/data_user_999.tar" "/data/user/999/$app_name"
+    restore_data "$app_name" "$user_id" "$backup_base/$app_name/sdcard_Android_data.tar" "/sdcard/Android/data/$app_name"
+    restore_data "$app_name" "$user_id" "$backup_base/$app_name/sdcard_Android_obb.tar" "/sdcard/Android/obb/$app_name"
     
     echo "恢复完成：$app_name"
 }
